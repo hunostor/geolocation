@@ -5,6 +5,82 @@ function initMap() {
     var infoWindow;
     var marker;
 
+    /**
+     * ***********************************************************************************************************
+     */
+         // Try HTML5 geolocation.
+         document.getElementById('get_location').onclick = function() {
+
+        if (navigator.geolocation) {
+          navigator.geolocation.getCurrentPosition(function(position) {
+            var pos = {
+              lat: position.coords.latitude,
+              lng: position.coords.longitude
+            };
+
+            infoWindow.setPosition(pos);
+            infoWindow.setContent('Location found.');
+            map.setCenter(pos);
+            marker.setPosition(pos);
+            lat = position.coords.latitude;
+            lng = position.coords.longitude;
+
+            $.ajax({
+                url: 'stores.php',
+                type: 'get',
+                dataType: 'json',
+                data: {
+                    lat: lat,
+                    lng: lng
+                }
+            }).done(function (response) {
+                var i;
+                var store;
+                var stores;
+                var infoMarkup = [];
+                var storeMarker;
+                var storeLocation;
+
+                if (response.count !== 0) {
+                    stores = response.results;
+
+                    for (i = 0; i < response.count; i = i + 1) {
+                        store = stores[i];
+
+                        infoMarkup.push('<div class="map-marker-info"><strong>' + store.name + '</strong> <p>' + store.distance.miles + ' kilométerre tőled &bull; <br/ >Tel: ' + store.telephone + ' &bull; <br /><a href="' + store.website + '">' + store.website + '</a></p></div>');
+
+                        storeLocation = new google.maps.LatLng(
+                            store.location.lat,
+                            store.location.lng
+                        );
+
+                        storeMarker = new google.maps.Marker({
+                            map: map,
+                            position: storeLocation
+                        });
+
+                        google.maps.event.addListener(storeMarker, 'click', (function (storeMarker, i) {
+                            return function () {
+                                infoWindow.setContent('<div>' + infoMarkup[i] + '</div>');
+                                infoWindow.open(map, storeMarker);
+                            };
+                        })(storeMarker, i));
+                    }
+                }
+
+            });
+              }, function() {
+                handleLocationError(true, infoWindow, map.getCenter());
+              });
+            } else {
+              // Browser doesn't support Geolocation
+              handleLocationError(false, infoWindow, map.getCenter());
+            }
+        }
+    /**
+     * ***************************************************************************************************************
+     */
+
     map = new google.maps.Map(document.getElementById('map'), {
         center: {
             lat: 47.4864425,
@@ -40,7 +116,6 @@ function initMap() {
             scaledSize: new google.maps.Size(35, 35)
         });
 
-        
         marker.setPosition(place.geometry.location);
         marker.setVisible(true);
 

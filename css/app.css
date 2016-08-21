@@ -37,3 +37,8 @@ html, body {
     font: 1.1em "Helvetica", sans-serif;
     padding: 20px 20px 10px 20px;
 }
+
+#get_location {
+    margin-bottom: 30px;
+    margin-top: 15px;
+}

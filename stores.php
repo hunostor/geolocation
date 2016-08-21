@@ -16,7 +16,7 @@ $lng = (float) $_GET['lng'];
 
 
 
-$locations = $db->query("SELECT id, address, lat, lng, telephone, email, website, name, ( 6371 * acos( cos( radians( $lat ) ) * cos( radians( lat ) ) * cos( radians( lng ) - radians( $lng ) ) + sin( radians( $lat ) ) * sin( radians( lat ) ) ) ) AS distance FROM locations HAVING distance < 30 ORDER BY distance LIMIT 0 , 20;
+$locations = $db->query("SELECT id, address, lat, lng, telephone, email, website, name, ( 6371 * acos( cos( radians( $lat ) ) * cos( radians( lat ) ) * cos( radians( lng ) - radians( $lng ) ) + sin( radians( $lat ) ) * sin( radians( lat ) ) ) ) AS distance FROM locations HAVING distance < 10000 ORDER BY distance LIMIT 0 , 20;
 ");
 
 $locations = $locations->fetchAll(PDO::FETCH_ASSOC);
